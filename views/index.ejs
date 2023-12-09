@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gantt App</title>
+
+    <!-- Enlaces CDN de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Enlaces CDN de Frappe Gantt -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.min.js"></script>
+
+    <!-- Agrega enlaces a tus archivos CSS personalizados aquí -->
+</head>
+<body class="container">
+
+    <div class="row">
+        <!-- Columna para la lista de proyectos -->
+        <div class="col-md-3">
+            <h2 class="mt-4">Proyectos</h2>
+            <ul class="list-group mt-2">
+                <% proyectosFrappeGantt.forEach(proyecto => { %>
+                    <li class="list-group-item">
+                        <strong><%= proyecto.nombre %></strong>
+                        <p>Fecha de Inicio: <%= proyecto.fechaInicio %></p>
+                        <p>Fecha de Fin: <%= proyecto.fechaFin %></p>
+                        <a href="/gantt/proyectos/<%= proyecto._id %>">Ver Tareas</a>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+
+        <!-- Columna para el diagrama de Gantt -->
+        <div class="col-md-9">
+            <h1 class="mt-4">Proyectos y Tareas</h1>
+
+            <!-- Formulario para crear un nuevo proyecto -->
+            <form action="/gantt/proyectos" method="POST" class="mt-4">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="nombreProyecto">Nombre del Proyecto:</label>
+                        <input type="text" id="nombreProyecto" name="nombre" class="form-control" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="fechaInicioProyecto">Fecha de Inicio:</label>
+                        <input type="date" id="fechaInicioProyecto" name="fechaInicio" class="form-control" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="fechaFinProyecto">Fecha de Fin:</label>
+                        <input type="date" id="fechaFinProyecto" name="fechaFin" class="form-control" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button type="submit" class="btn btn-primary">Crear Proyecto</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Contenedor para el diagrama de Gantt -->
+            <div id="gantt" class="mt-4" style="height: 500px;"></div>
+        </div>
+    </div>
+
+    <!-- Resto del contenido (script, enlaces, etc.) -->
+
+    <div id="proyectos-data" data-proyectos='<%- JSON.stringify(proyectosFrappeGantt || []) %>'></div>
+
+    <!-- Configuración y renderizado del diagrama de Gantt -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Recupera los datos de proyectos del atributo data-proyectos
+            var proyectosData = document.getElementById('proyectos-data').getAttribute('data-proyectos');
+            var proyectos = JSON.parse(proyectosData);
+            console.log('Proyectos en EJS:', proyectos);
+
+            const ganttChart = new Gantt("#gantt", proyectos, {
+                header_height: 50,
+                column_width: 30,
+                step: 24,
+                view_modes: ['Quarter Day', 'Half Day', 'Day', 'Week', 'Month'],
+                bar_height: 20,
+                bar_corner_radius: 3,
+                arrow_curve: 5,
+                padding: 18,
+                view_mode: 'Day',
+                date_format: 'YYYY-MM-DD',
+                popup_trigger: 'mouseover',
+                custom_popup_html: null,
+                language: 'es'
+                // Configuraciones opcionales aquí
+            });
+
+            // Renderiza el diagrama de Gantt
+            ganttChart.render();
+        });
+    </script>
+
+    <!-- Agrega el enlace al archivo JS de Bootstrap y a tus archivos JavaScript personalizados aquí -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+
+
+
