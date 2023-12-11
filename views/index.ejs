@@ -89,14 +89,25 @@
                 console.log('Clic en tarea:', task);
             },
             on_date_change: (task, start, end) => {
-                // Actualizar las fechas de inicio y fin en el objeto de tarea
-                task._start = start;
-                task._end = end;
-                // Manejar el cambio de fechas aquí
-                console.log('Cambiar fechas de tarea:', task, start, end);
-                // Renderizar el gráfico de Gantt nuevamente
-                ganttChart.render();
-            },
+    // Verificar que las fechas sean instancias válidas de Date y que la fecha de inicio sea anterior a la fecha de fin
+    if (!(start instanceof Date) || !(end instanceof Date) || start >= end) {
+        console.error('Fechas inválidas:', start, end);
+        return;
+    }
+
+    // Actualizar las fechas de inicio y fin en el objeto de tarea
+    task.start = start; // Cambiado de _start a start
+    task.end = end;     // Cambiado de _end a end
+
+    // Manejar el cambio de fechas aquí
+    console.log('Cambiar fechas de tarea:', task, start, end);
+
+    // Renderizar el gráfico de Gantt nuevamente
+    ganttChart.render();
+}
+
+
+,
             custom_popup_html: (task) => {
                 // Asegurarse de que _start y _end son objetos de Date
                 const start = new Date(task._start);
