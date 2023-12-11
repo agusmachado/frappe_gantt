@@ -15,7 +15,7 @@
 
     <!-- Agrega enlaces a tus archivos CSS personalizados aquí -->
 </head>
-<body class="container-fluid" style="background-color: blueviolet;">
+<body class="container-fluid">
     <div class="row justify-content-center">
 
         <!-- Columna para el diagrama de Gantt -->
@@ -38,7 +38,7 @@
                         <label for="fechaFinProyecto">Fecha de Fin:</label>
                         <input type="date" id="fechaFinProyecto" name="fechaFin" class="form-control" required>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-3 mb-3 align-self-end">
                         <button type="submit" class="btn btn-primary">Crear Proyecto</button>
                     </div>
                 </div>
@@ -77,14 +77,42 @@
             column_width: 30,
             step: 24,
             view_modes: ['Quarter Day', 'Half Day', 'Day', 'Week', 'Month'],
-            bar_height: 20,
-            bar_corner_radius: 3,
+            bar_height: 40,
+            bar_corner_radius: 5,
             arrow_curve: 5,
             padding: 18,
             view_mode: 'Week', // Cambiado a 'Week' por defecto
             date_format: 'YYYY-MM-DD',
             popup_trigger: 'mouseover',
-            custom_popup_html: null,
+            draggable: true, // Habilitar la funcionalidad de arrastre
+            on_click: task => {
+                console.log('Clic en tarea:', task);
+            },
+            on_date_change: (task, start, end) => {
+                // Actualizar las fechas de inicio y fin en el objeto de tarea
+                task._start = start;
+                task._end = end;
+                // Manejar el cambio de fechas aquí
+                console.log('Cambiar fechas de tarea:', task, start, end);
+                // Renderizar el gráfico de Gantt nuevamente
+                ganttChart.render();
+            },
+            custom_popup_html: (task) => {
+                // Asegurarse de que _start y _end son objetos de Date
+                const start = new Date(task._start);
+                const end = new Date(task._end);
+
+                // Calcular la diferencia en milisegundos y convertirla a días
+                const duracionDias = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+
+                // Personaliza el contenido del popup que se muestra al hacer clic en una barra
+                return `<div class="popup-container" style="background-color: Aqua; width: 15rem; height: 20vh; color: black;">
+                            <h4>${task.name}</h4>
+                            <p>Inicio: ${new Date(task._start).toISOString().split('T')[0]}</p>
+                            <p>Fin: ${new Date(task._end).toISOString().split('T')[0]}</p>
+                            <p>Duración: ${duracionDias} días</p>
+                        </div>`;
+            },
             language: 'es'
             // Configuraciones opcionales aquí
         });
@@ -118,6 +146,7 @@
         });
     });
 </script>
+
 
 
 
