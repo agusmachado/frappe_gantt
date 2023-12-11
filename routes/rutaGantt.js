@@ -15,7 +15,7 @@ router.get('/proyectos', async (req, res) => {
                 end: proyecto.fechaFin.toISOString().split('T')[0],
             };
         });
-        console.log('Proyectos Frappe Gantt:', proyectosFrappeGantt);
+        /* console.log('Proyectos Frappe Gantt:', proyectosFrappeGantt); */
         res.render('index', { proyectosFrappeGantt });
     } catch (error) {
         console.error('Error al obtener proyectos:', error);

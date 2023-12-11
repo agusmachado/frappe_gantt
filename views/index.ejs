@@ -15,26 +15,12 @@
 
     <!-- Agrega enlaces a tus archivos CSS personalizados aquí -->
 </head>
-<body class="container">
-
-    <div class="row">
-        <!-- Columna para la lista de proyectos -->
-        <div class="col-md-3">
-            <h2 class="mt-4">Proyectos</h2>
-            <ul class="list-group mt-2">
-                <% proyectosFrappeGantt.forEach(proyecto => { %>
-                    <li class="list-group-item">
-                        <strong><%= proyecto.nombre %></strong>
-                        <p>Fecha de Inicio: <%= proyecto.fechaInicio %></p>
-                        <p>Fecha de Fin: <%= proyecto.fechaFin %></p>
-                        <a href="/gantt/proyectos/<%= proyecto._id %>">Ver Tareas</a>
-                    </li>
-                <% }); %>
-            </ul>
-        </div>
+<body class="container-fluid" style="background-color: blueviolet;">
+    <div class="row justify-content-center">
 
         <!-- Columna para el diagrama de Gantt -->
         <div class="col-md-9">
+            
             <h1 class="mt-4">Proyectos y Tareas</h1>
 
             <!-- Formulario para crear un nuevo proyecto -->
@@ -58,51 +44,91 @@
                 </div>
             </form>
 
+            <!-- Botonera para cambiar la vista -->
+            <div class="mt-3">
+                <button id="btnAnio" class="btn btn-primary">Año</button>
+                <button id="btnMes" class="btn btn-primary">Mes</button>
+                <button id="btnSemana" class="btn btn-primary">Semana</button>
+                <button id="btnDia" class="btn btn-primary">Día</button>
+            </div>
             <!-- Contenedor para el diagrama de Gantt -->
             <div id="gantt" class="mt-4" style="height: 500px;"></div>
+
+            
         </div>
     </div>
 
-    <!-- Resto del contenido (script, enlaces, etc.) -->
+<!-- Resto del contenido (script, enlaces, etc.) -->
 
-    <div id="proyectos-data" data-proyectos='<%- JSON.stringify(proyectosFrappeGantt || []) %>'></div>
+<div id="proyectos-data" data-proyectos='<%- JSON.stringify(proyectosFrappeGantt || []) %>'></div>
 
-    <!-- Configuración y renderizado del diagrama de Gantt -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Recupera los datos de proyectos del atributo data-proyectos
-            var proyectosData = document.getElementById('proyectos-data').getAttribute('data-proyectos');
-            var proyectos = JSON.parse(proyectosData);
-            console.log('Proyectos en EJS:', proyectos);
 
-            const ganttChart = new Gantt("#gantt", proyectos, {
-                header_height: 50,
-                column_width: 30,
-                step: 24,
-                view_modes: ['Quarter Day', 'Half Day', 'Day', 'Week', 'Month'],
-                bar_height: 20,
-                bar_corner_radius: 3,
-                arrow_curve: 5,
-                padding: 18,
-                view_mode: 'Day',
-                date_format: 'YYYY-MM-DD',
-                popup_trigger: 'mouseover',
-                custom_popup_html: null,
-                language: 'es'
-                // Configuraciones opcionales aquí
-            });
 
-            // Renderiza el diagrama de Gantt
-            ganttChart.render();
+<!-- Configuración y renderizado del diagrama de Gantt -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Recupera los datos de proyectos del atributo data-proyectos
+        var proyectosData = document.getElementById('proyectos-data').getAttribute('data-proyectos');
+        var proyectos = JSON.parse(proyectosData);
+        console.log('Proyectos en EJS:', proyectos);
+
+        const ganttChart = new Gantt("#gantt", proyectos, {
+            header_height: 50,
+            column_width: 30,
+            step: 24,
+            view_modes: ['Quarter Day', 'Half Day', 'Day', 'Week', 'Month'],
+            bar_height: 20,
+            bar_corner_radius: 3,
+            arrow_curve: 5,
+            padding: 18,
+            view_mode: 'Week', // Cambiado a 'Week' por defecto
+            date_format: 'YYYY-MM-DD',
+            popup_trigger: 'mouseover',
+            custom_popup_html: null,
+            language: 'es'
+            // Configuraciones opcionales aquí
         });
-    </script>
 
-    <!-- Agrega el enlace al archivo JS de Bootstrap y a tus archivos JavaScript personalizados aquí -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        // Cambia la vista al cargar la página
+        ganttChart.change_view_mode('Week');
+
+        // Renderiza el diagrama de Gantt
+        ganttChart.render();
+
+        // Función para cambiar la vista según el botón presionado
+        function cambiarVista(vista) {
+            ganttChart.change_view_mode(vista);
+        }
+
+        // Evento click para los botones
+        document.getElementById('btnAnio').addEventListener('click', function () {
+            cambiarVista('Year');
+        });
+
+        document.getElementById('btnMes').addEventListener('click', function () {
+            cambiarVista('Month');
+        });
+
+        document.getElementById('btnSemana').addEventListener('click', function () {
+            cambiarVista('Week');
+        });
+
+        document.getElementById('btnDia').addEventListener('click', function () {
+            cambiarVista('Day');
+        });
+    });
+</script>
+
+
+
+<!-- Agrega el enlace al archivo JS de Bootstrap y a tus archivos JavaScript personalizados aquí -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 </body>
+
 </html>
 
 
