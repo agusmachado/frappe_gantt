@@ -55,7 +55,30 @@ router.post('/proyectos', async (req, res) => {
     }
 });
 
-// Puedes agregar más rutas y lógica según sea necesario...
+// Ruta para actualizar un proyecto
+router.post('/proyectos/actualizar', async (req, res) => {
+    const { proyectoId, nuevaFechaInicio, nuevaFechaFin } = req.body;
+
+    try {
+        // Aquí deberías realizar la lógica necesaria para actualizar las fechas en tu base de datos
+        // Puedes utilizar el ID del proyecto para buscarlo en la base de datos y actualizar las fechas
+
+        // Por ejemplo, suponiendo que el ID está presente en proyectoId
+        const proyectoActualizado = await Proyecto.findByIdAndUpdate(
+            proyectoId,
+            { $set: { fechaInicio: nuevaFechaInicio, fechaFin: nuevaFechaFin } },
+            { new: true } // Para obtener el proyecto actualizado
+        );
+
+        // Redirige al usuario a la página index.ejs
+        res.redirect('/gantt/proyectos');  // Ajusta la ruta según tu estructura de URL
+
+    } catch (error) {
+        console.error('Error al actualizar el proyecto:', error);
+        res.status(500).json({ success: false, error: 'Error interno del servidor' });
+    }
+});
+
 
 module.exports = router;
 
