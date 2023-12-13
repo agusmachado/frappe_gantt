@@ -28,25 +28,35 @@ router.get('/proyectos', async (req, res) => {
 });
 
 
-// Ruta para cambiar la vista del proyecto
 router.post('/proyectos/cambiar-vista', async (req, res) => {
     const { proyectoId, nuevaVista } = req.body;
 
     try {
-        // Actualiza la preferencia de vista en todos los proyectos
-        await Proyecto.updateMany({}, { $set: { viewPreference: nuevaVista } });
+        // Encuentra el proyecto por ID
+        const proyecto = await Proyecto.findById(proyectoId);
 
-        // Obtén la información actualizada de todos los proyectos después de guardar los cambios
-        const nuevaInformacion = await Proyecto.find();
+        if (!proyecto) {
+            return res.status(404).json({ success: false, error: 'Proyecto no encontrado' });
+        }
+
+        // Actualiza la preferencia de vista en el proyecto
+        proyecto.viewPreference = nuevaVista;
+
+        // Guarda los cambios en la base de datos
+        await proyecto.save();
+
+        // Obtén la información actualizada del proyecto después de guardar los cambios
+        const nuevosProyectos = await Proyecto.find();
 
         // Envía una respuesta JSON con la nueva información
-        res.json({ success: true, nuevaInformacion });
+        res.json({ success: true, nuevosProyectos });
 
     } catch (error) {
         console.error('Error al cambiar la vista en el servidor:', error);
         return res.status(500).json({ success: false, error: 'Error interno del servidor' });
     }
 });
+
 
 
 
