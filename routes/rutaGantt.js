@@ -4,7 +4,7 @@ const Proyecto = require('../models/Proyecto');
 const Tarea = require('../models/Tarea');
 
 // Ruta para obtener todos los proyectos
-router.get('/proyectos', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const proyectos = await Proyecto.find();
         const proyectosFrappeGantt = proyectos.map(proyecto => {

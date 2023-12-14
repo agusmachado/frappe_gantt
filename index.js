@@ -21,12 +21,8 @@ mongoose.connection.on('error', (error) => {
     console.error('Error en la conexión a la base de datos:', error);
 });
 
-// Ruta de inicio
-app.get('/', (req, res) => {
-    res.redirect('/gantt/proyectos')
-});
  
-app.use('/gantt', rutaGantt);
+app.use('/', rutaGantt);
 
 
 
