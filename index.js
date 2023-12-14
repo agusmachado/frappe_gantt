@@ -21,7 +21,12 @@ mongoose.connection.on('error', (error) => {
     console.error('Error en la conexión a la base de datos:', error);
 });
 
+
 app.use('/gantt', rutaGantt);
+app.use('', (req, res) =>{
+    res.render('home')
+})
+
 
 const PORT = process.env.PORT || 3000;
 const host = process.env.HOST;
