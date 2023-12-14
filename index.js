@@ -24,6 +24,8 @@ mongoose.connection.on('error', (error) => {
 app.use('/gantt', rutaGantt);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const host = process.env.HOST;
+
+app.listen(PORT, host, () => {
     console.log(`Servidor iniciado en http://localhost:${PORT}`);
 });
