@@ -25,7 +25,7 @@
             <h1 class="mt-4">Proyectos y Tareas</h1>
 
             <!-- Formulario para crear un nuevo proyecto -->
-            <form action="/gantt/proyectos" method="POST" class="mt-4">
+            <form action="/proyectos" method="POST" class="mt-4">
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label for="nombreProyecto">Nombre del Proyecto:</label>
@@ -46,7 +46,7 @@
             </form>
 
             <!-- Formulario para modificar un proyecto -->
-            <form action="/gantt/proyectos/actualizar" method="POST" class="mt-4">
+            <form action="/proyectos/actualizar" method="POST" class="mt-4">
                 <div class="row">
                      <!-- Selecciona el proyecto a modificar -->
                      <div class="col-md-3 mb-3">
@@ -76,7 +76,7 @@
             </form>
 
 <!-- Formulario para cambiar la vista -->
-<form id="formCambiarVista" action="/gantt/proyectos/cambiar-vista" method="POST">
+<form id="formCambiarVista" action="/proyectos/cambiar-vista" method="POST">
     <div class="mt-3">
         <% if (proyecto) { %>
             <input type="hidden" name="proyectoId" id="proyectoId" value="<%= proyecto.id %>">
@@ -191,7 +191,7 @@
                 const nuevaVista = event.submitter.value;
                 const proyectoId = document.getElementById('proyectoId').value;
 
-                fetch('/gantt/proyectos/cambiar-vista', {
+                fetch('/proyectos/cambiar-vista', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
