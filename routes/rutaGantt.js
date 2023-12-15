@@ -85,7 +85,7 @@ router.post('/proyectos', async (req, res) => {
     try {
         const nuevoProyecto = new Proyecto({ nombre, fechaInicio, fechaFin });
         await nuevoProyecto.save();
-        res.redirect('/gantt/proyectos');
+        res.redirect('/proyectos');
     } catch (error) {
         console.error('Error al crear un nuevo proyecto:', error);
         res.status(500).send('Error interno del servidor');
@@ -105,7 +105,7 @@ router.post('/proyectos/actualizar', async (req, res) => {
         );
 
         // Redirige al usuario a la página index.ejs
-        res.redirect('/gantt/proyectos');  // Ajusta la ruta según tu estructura de URL
+        res.redirect('/proyectos');  // Ajusta la ruta según tu estructura de URL
 
     } catch (error) {
         console.error('Error al actualizar el proyecto:', error);
