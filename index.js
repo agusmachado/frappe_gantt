@@ -1,33 +1,30 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const rutaGantt = require('./routes/rutaGantt.js');
-const Proyecto = require('./models/Proyecto.js');
-const Tarea = require('./models/Tarea.js');
-require('dotenv').config();
+import express from 'express';
+import dotenv from 'dotenv';
+import conectarDB from './config/db.js';
+import rutaGantt from './routes/rutaGantt.js'
+
+dotenv.config();
 const app = express();
 
+// ---- HABILITAMOS LAS VARIABLES DE ENTORNO ---- //
+const PORT = process.env.PORT || 3000;
+const host = process.env.HOST;
+
+// ---- CONEXIÓN BASE DE DATOS ---- //
+conectarDB();
+
+
+// ---- ARCHIVOS ESTÁTICOS Y ACTIVACIÓN DE LOS EJS ---- //
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
+
+// ---- MIDDLEWARE PARA PROCESAR LOS DATOS DEL FORMULARIO ---- //
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI);
-
-mongoose.connection.once('open', () => {
-    console.log('Conexión a la base de datos establecida con éxito');
-});
-
-mongoose.connection.on('error', (error) => {
-    console.error('Error en la conexión a la base de datos:', error);
-});
-
- 
+// ---- RUTAS PARA EL PROYECTO GANTT ---- //
 app.use('/', rutaGantt);
 
-
-
-const PORT = process.env.PORT || 3000;
-const host = process.env.HOST;
 
 app.listen(PORT, host, () => {
     console.log(`Servidor iniciado en http://localhost:${PORT}`);

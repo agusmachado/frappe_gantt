@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const tareaSchema = new mongoose.Schema({
     nombre: {
@@ -22,4 +22,4 @@ const tareaSchema = new mongoose.Schema({
 
 const Tarea = mongoose.model('Tarea', tareaSchema);
 
-module.exports = Tarea;
+export default Tarea;
