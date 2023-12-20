@@ -37,36 +37,6 @@ const obtenerProyectos = async (req, res) => {
     }
 }
 
-
-// ----------------- Función para obtener un proyecto y sus tareas por ID
-
-/* const obtenerProyectosPorId = async (req, res) => {
-    // Obtiene el ID del proyecto de los parámetros de la URL
-    const proyectoId = req.params.id;
-
-    try {
-        // Busca el proyecto por su ID en la base de datos
-        const proyecto = await Proyecto.findById(proyectoId);
-
-        // Verifica si el proyecto existe
-        if (!proyecto) {
-            // Si no existe, envía una respuesta con código 404 y un mensaje de error
-            return res.status(404).send('Proyecto no encontrado');
-        }
-
-        // Busca las tareas asociadas al proyecto en la base de datos
-        const tareas = await Tarea.find({ proyectoId });
-
-        // Renderiza la plantilla 'proyecto' con los datos del proyecto y sus tareas
-        res.render('proyecto', { proyecto, tareas });
-
-    } catch (error) {
-        // Manejo de errores: Loggea el error y envía una respuesta de error al cliente
-        console.error('Error al obtener proyecto y tareas:', error);
-        res.status(500).send('Error interno del servidor');
-    }
-} */
-
 // -------------------- Función para crear un proyecto nuevo
 
 const crearProyectoNuevo = async (req, res) => {
@@ -149,12 +119,50 @@ const cambiarVista = async (req, res) => {
     }
 }
 
+
+const actualizarCumplimiento = async (req, res) => {
+    try {
+        // Obtiene los datos necesarios del cuerpo de la solicitud (proyectoId, progress)
+        const { proyectoId, progress } = req.body;
+
+        // Verifica que proyectoId y progress estén presentes y sean cadenas no vacías
+        if (!proyectoId || !progress || typeof proyectoId !== 'string' || typeof progress !== 'string') {
+            return res.status(400).json({ success: false, error: 'Datos de solicitud inválidos' });
+        }
+
+        // Convierte progress a un número y verifica si es un número válido
+        const progressNumber = Number(progress);
+        if (isNaN(progressNumber) || progressNumber < 0 || progressNumber > 100) {
+            return res.status(400).json({ success: false, error: 'El valor de avance no es válido' });
+        }
+
+        // Busca el proyecto por ID y actualiza el campo de cumplimiento en la base de datos
+        const proyecto = await Proyecto.findByIdAndUpdate(
+            proyectoId,
+            { $set: { progress: progressNumber } },
+            { new: true }
+        );
+
+        // Verifica si el proyecto existe
+        if (!proyecto) {
+            return res.status(404).json({ success: false, error: 'Proyecto no encontrado' });
+        }
+
+        // Envía una respuesta JSON con el proyecto actualizado
+        res.json({ success: true, proyecto: { ...proyecto.toJSON(), progress: proyecto.progress } });
+    } catch (error) {
+        // Manejo de errores: Loggea el error y envía una respuesta JSON de error al cliente
+        console.error('Error al actualizar el cumplimiento:', error);
+        res.status(500).json({ success: false, error: 'Error interno del servidor' });
+    }
+}
+
 // Exportar todas las funciones para su uso en otros archivos
 export {
     obtenerProyectos,
-   // obtenerProyectosPorId,
     crearProyectoNuevo,
     actualizarProyecto,
-    cambiarVista
+    cambiarVista,
+    actualizarCumplimiento
 } 
 
