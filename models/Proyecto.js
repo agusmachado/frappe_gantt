@@ -4,11 +4,19 @@ const proyectoSchema = new mongoose.Schema({
     nombre: String,
     fechaInicio: Date,
     fechaFin: Date,
-    viewPreference: String  // Agrega este campo para almacenar la preferencia de vista
+    viewPreference: String,
+    progress: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0,
+    },
 });
 
 const Proyecto = mongoose.model('Proyecto', proyectoSchema);
 
 export default Proyecto;
+
+
 
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,20 +8,28 @@
     <title>Gantt App</title>
 
     <!-- Enlaces CDN de Bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap 5.3.2: Hoja de estilos CSS de Bootstrap, proporciona estilos básicos y componentes visuales para la interfaz de usuario. -->
 
     <!-- Enlaces CDN de Frappe Gantt -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt/dist/frappe-gantt.min.js"></script>  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
+    <!-- Frappe Gantt 0.6.1: Hoja de estilos CSS específica para la representación visual de gráficos de Gantt usando Frappe Gantt. Proporciona estilos para la apariencia de las tareas y el gráfico de Gantt. -->
+
+    <!-- Script para cargar Moment.js versión 2.29.1 desde Cloudflare -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Moment.js 2.29.1: Biblioteca para manipulación y formateo de fechas en JavaScript. Puede ser utilizada para gestionar fechas y tiempos de manera eficiente en conjunción con otras bibliotecas, como Frappe Gantt. -->
+
+    <!-- Script para cargar Frappé Gantt versión 0.6.1 desde jsDelivr -->
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.js"></script>
+    <!-- Frappe Gantt 0.6.1: Biblioteca JavaScript para la representación y manipulación de gráficos de Gantt. Permite crear y gestionar visualmente diagramas de Gantt interactivos para mostrar la programación de tareas y proyectos en el tiempo. Utiliza Moment.js para el manejo de fechas. -->
     
 </head>
+
 <body class="container-fluid">
     <div class="row justify-content-center">
-
         <!-- Columna para el diagrama de Gantt -->
         <div class="col-md-9">
-            
             <h1 class="mt-4">Proyectos y Tareas</h1>
 
             <!-- Formulario para crear un nuevo proyecto -->
@@ -45,10 +54,10 @@
             </form>
 
             <!-- Formulario para modificar un proyecto -->
-            <form action="/proyectos/actualizar" method="POST" class="mt-4">
+            <form action="/proyectos/actualizar" method="POST" class="mt-6">
                 <div class="row">
-                     <!-- Selecciona el proyecto a modificar -->
-                     <div class="col-md-3 mb-3">
+                    <!-- Selecciona el proyecto a modificar -->
+                    <div class="col-md-3 mb-3">
                         <label for="selectProyecto">Seleccionar Proyecto:</label>
                         <select id="selectProyecto" name="proyectoId" class="form-control" required>
                             <!-- Aquí debes iterar sobre tus proyectos y generar las opciones -->
@@ -74,157 +83,275 @@
                 </div>
             </form>
 
-<!-- Formulario para cambiar la vista -->
-<form id="formCambiarVista" action="/proyectos/cambiar-vista" method="POST">
-    <div class="mt-3">
-        <% if (proyecto) { %>
-            <input type="hidden" name="proyectoId" id="proyectoId" value="<%= proyecto.id %>">
-        <% } %>
-        <button type="submit" name="nuevaVista" value="Year" class="btn btn-primary" id="btnAnio">Año</button>
-        <button type="submit" name="nuevaVista" value="Month" class="btn btn-primary" id="btnMes">Mes</button>
-        <button type="submit" name="nuevaVista" value="Week" class="btn btn-primary" id="btnSemana">Semana</button>
-        <button type="submit" name="nuevaVista" value="Day" class="btn btn-primary" id="btnDia">Día</button>
-    </div>
-</form>
+            <div class="row mt-3 justify-content-center align-items-center">
+                <!-- Formulario para cambiar la vista (30% de la fila) -->
+                <form id="formCambiarVista" action="/proyectos/cambiar-vista" method="POST" class="col-md-3">
+                    <% if (proyecto) { %>
+                        <input type="hidden" name="proyectoId" id="proyectoId" value="<%= proyecto.id %>">
+                    <% } %>
+                    <div class="d-flex">
+                        <button type="submit" name="nuevaVista" value="Year" class="btn btn-primary"
+                            style="margin-right: 0.5rem;">Año</button>
+                        <button type="submit" name="nuevaVista" value="Month" class="btn btn-primary"
+                            style="margin-right: 0.5rem;">Mes</button>
+                        <button type="submit" name="nuevaVista" value="Week" class="btn btn-primary"
+                            style="margin-right: 0.5rem;">Semana</button>
+                        <button type="submit" name="nuevaVista" value="Day" class="btn btn-primary">Día</button>
+                    </div>
+                </form>
+
+                <!-- Formulario de cumplimiento (70% de la fila) -->
+                <form id="formularioCumplimiento" action="/actualizar-cumplimiento" method="POST" class="col-md-9">
+                    <div class="row align-items-end">
+                        <div class="col-md-3 mb-3">
+                            <label for="selectProyectoCumplimiento">Seleccionar Proyecto:</label>
+                            <select id="selectProyectoCumplimiento" name="proyectoId" class="form-control" required>
+                                <!-- Aquí debes iterar sobre tus proyectos y generar las opciones -->
+                                <% proyectosFrappeGantt.forEach(proyecto => { %>
+                                    <option value="<%= proyecto.id %>"><%= proyecto.name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="progress">Avance (%):</label>
+                            <input type="number" id="progress" name="progress" min="0" max="100" class="form-control"
+                                required>
+                        </div>
+                        <div class="col-md-3 mb-3 align-self-end">
+                            <button type="submit" class="btn btn-primary">Actualizar avance</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
             <!-- Contenedor para el diagrama de Gantt -->
             <div id="gantt" class="mt-4" style="height: 500px;"></div>
-
         </div>
     </div>
 
     <!-- Resto del contenido (script, enlaces, etc.) -->
-
     <div id="proyectos-data" data-proyectos='<%- JSON.stringify(proyectosFrappeGantt || []) %>'></div>
 
-    <!-- Configuración y renderizado del diagrama de Gantt -->
-    <script>
-        document.addEventListener('DOMContentLoaded', async function () {
-            var proyectosData = document.getElementById('proyectos-data').getAttribute('data-proyectos');
-            var proyectos = JSON.parse(proyectosData);
+<!-- Configuración y renderizado del diagrama de Gantt -->
+<script>
+    // Declarar ganttChart globalmente para que sea accesible desde cualquier parte del código
+    let ganttChart;
+    document.addEventListener('DOMContentLoaded', async function () {
+      const proyectosData = document.getElementById('proyectos-data').getAttribute('data-proyectos');
+      const proyectos = JSON.parse(proyectosData);
+  
+      if (proyectos.length > 0) {
+        const fechasInicio = proyectos.map(project => new Date(project.start).getTime());
+        const fechasFin = proyectos.map(project => new Date(project.end).getTime());
+  
+        const minDate = new Date(Math.min(...fechasInicio));
+        const maxDate = new Date(Math.max(...fechasFin));
+  
+        if (minDate && maxDate) {
+            // Aquí asumimos que la preferencia de vista está almacenada en el primer proyecto
+            const preferenciaVista = proyectos[0].viewPreference || 'Month';
 
-            if (proyectos.length > 0) {
-                const minDate = new Date(Math.min(...proyectos.map(project => new Date(project.start))));
-                const maxDate = new Date(Math.max(...proyectos.map(project => new Date(project.end))));
-
-                if (minDate && maxDate) {
-                    // Aquí asumimos que la preferencia de vista está almacenada en el primer proyecto
-                    const preferenciaVista = proyectos[0].viewPreference || 'Month';
-
-                    const ganttChart = new Gantt("#gantt", proyectos,  {
-                        header_height: 50,
-                        column_width: 30,
-                        step: 24,
-                        view_mode: preferenciaVista,
-                        bar_height: 40,
-                        bar_corner_radius: 5,
-                        arrow_curve: 5,
-                        padding: 18,
-                        date_format: 'YYYY-MM-DD',
-                        popup_trigger: 'mouseover',
-                        draggable: false,
-                        on_click: task => {
-                            console.log('Clic en tarea:', task);
-                        },
-                        on_date_change: (task, start, end) => {
-                            if (!(start instanceof Date) || !(end instanceof Date) || start >= end) {
-                                console.error('Fechas inválidas:', start, end);
-                                return;
-                            }
-
-                            task._start = start;
-                            task._end = end;
-
-                            console.log('Cambiar fechas de tarea:', task, start, end);
-
-                            // Llama a tu función para guardar cambios en la base de datos aquí
-                            // guardarCambiosEnBaseDeDatos(task);
-
-                            ganttChart.render();
-                        },
-                        custom_popup_html: (task) => {
-                            const start = new Date(task._start);
-                            const end = new Date(task._end);
-                            const duracionDias = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-
-                            return `<div class="popup-container" style="background-color: Aqua; width: 15rem; height: 30vh; color: black;">
-                                <h4>${task.name}</h4>
-                                <p>Inicio: ${start.toISOString().split('T')[0]}</p>
-                                <p>Fin: ${end.toISOString().split('T')[0]}</p>
-                                <p>Duración: ${duracionDias} días</p>
-                            </div>`;
-                        },
-                        language: 'es'
-                    });
-
-                    ganttChart.setup_dates(minDate, maxDate);
-                    ganttChart.render();
-                } else {
-                    console.error('Las fechas de los proyectos no son válidas.');
+            // Modifica cada tarea para incluir el porcentaje de avance
+            proyectos.forEach(tarea => {
+                tarea.progress = tarea.progress || 0; // Si cumplimiento no está definido, se asume como 0
+            });
+            if (ganttChart) {
+                ganttChart.clear();
+            }
+            ganttChart = new Gantt("#gantt", proyectos, {
+                header_height: 50,
+                column_width: 30,
+                step: 24,
+                view_mode: preferenciaVista,
+                bar_height: 40,
+                bar_corner_radius: 5,
+                arrow_curve: 5,
+                padding: 18,
+                date_format: 'YYYY-MM-DD',
+                popup_trigger: 'mouseover',
+                draggable: false,
+                show_progress: true,
+                bar_render: (bar, task) => {
+                    console.log('Datos de la tarea:', task);
+                    // Puedes personalizar el contenido HTML de la barra aquí
+                    bar.innerHTML = `
+                        <div style="text-align: center; font-size: 12px; font-weight: bold;">
+                            <div>${task.name} - ${task.progress}%</div>
+                        </div>`;
+                    // Agrega cualquier otro contenido adicional que desees mostrar en la barra
+                },
+                on_click: task => {
+                console.log('Clic en tarea:', task);
+                },
+                on_date_change: (task, start, end) => {
+                if (!(start instanceof Date) || !(end instanceof Date) || start >= end) {
+                    console.error('Fechas inválidas:', start, end);
+                    return;
                 }
+
+                task._start = start;
+                task._end = end;
+
+                console.log('Cambiar fechas de tarea:', task, start, end);
+
+                ganttChart.render();
+                },
+                custom_popup_html: (task) => {
+                const start = new Date(task._start);
+                const end = new Date(task._end);
+                const duracionDias = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                // Agrega el porcentaje de avance al popup
+                const progress = task.progress;
+
+                return `<div class="popup-container"
+                    style="background-color: Aqua; width: 15rem; height: 30vh; color: black; ">
+                    <h4>${task.name}</h4>
+                    <p>Inicio: ${start.toISOString().split('T')[0]}</p>
+                    <p>Fin: ${end.toISOString().split('T')[0]}</p>
+                    <p>Duración: ${duracionDias} días</p>
+                    <p>Avance: ${progress}%</p>
+                </div>`;
+                },
+                language: 'es'
+            });
+
+            ganttChart.setup_dates(minDate, maxDate);
+
+            ganttChart.render();
             } else {
-                console.warn('No hay proyectos disponibles para mostrar en el diagrama de Gantt.');
-            }       
-        });
-    </script>
+            console.error('Las fechas de los proyectos no son válidas.');
+            }
 
-
-    <!-- Agrega el enlace al archivo JS de Bootstrap y a tus archivos JavaScript personalizados aquí -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-
-    <!-- Actualización de la vista del diagrama de Gantt -->
-    <script>
-        // Función para actualizar la vista del Gantt Chart
-        function actualizarVistaGanttConNuevaInformacion(nuevosProyectos) {
-            // Lógica para actualizar la vista del Gantt Chart
-        // console.log('Vista actualizada con éxito:', nuevosProyectos);
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('formCambiarVista').addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                const nuevaVista = event.submitter.value;
-                const proyectoId = document.getElementById('proyectoId').value;
-
-                fetch('/proyectos/cambiar-vista', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        proyectoId,
-                        nuevaVista,
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        console.error('Error al cambiar la vista en el servidor:', data.error);
-                        // Maneja el error si es necesario
-                    } else {
-                        // Puedes agregar lógica adicional aquí si es necesario
-                    // console.log('Vista actualizada con éxito:', data.nuevaInformacion);
-
-                        // Actualiza dinámicamente la vista del Gantt Chart con la información recién actualizada
-                        actualizarVistaGanttConNuevaInformacion(data.nuevosProyectos);
-
-                        // Recarga la página o vuelve a renderizar el gráfico según tus necesidades
-                        location.reload(); // o tu función para volver a renderizar el gráfico
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al realizar la solicitud al servidor:', error);
-                    // Maneja el error si es necesario
-                });
+      } else {
+        console.warn('No hay proyectos disponibles para mostrar en el diagrama de Gantt.');
+      }
+    });
+  </script>
+  
+  <!-- Actualización de la vista del diagrama de Gantt -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const formCambiarVista = document.getElementById('formCambiarVista');
+      
+      if (formCambiarVista) {
+        formCambiarVista.addEventListener('submit', function (event) {
+          event.preventDefault();
+  
+          const nuevaVista = event.submitter.value;
+          const proyectoId = document.getElementById('proyectoId').value;
+  
+          // Validar que nuevaVista y proyectoId estén presentes y sean válidos aquí antes de hacer la solicitud fetch
+  
+          fetch('/proyectos/cambiar-vista', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              proyectoId,
+              nuevaVista,
+            }),
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (!data.success) {
+                console.error('Error al cambiar la vista en el servidor:', data.error);
+                // Maneja el error si es necesario
+              } else {
+                // Recarga la página o vuelve a renderizar el gráfico según tus necesidades
+                location.reload(); // o tu función para volver a renderizar el gráfico
+              }
+            })
+            .catch(error => {
+              console.error('Error al realizar la solicitud al servidor:', error);
+              // Maneja el error si es necesario
             });
         });
-    </script>
+      }
+    });
+  </script>
+  
+  <!-- Actualización del cumplimiento -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const formularioCumplimiento = document.getElementById('formularioCumplimiento');
+  
+      if (formularioCumplimiento) {
 
-    
+        // Obtén la referencia al input de progreso antes de la función que maneja el evento submit
+        const progressInput = document.getElementById('progress');
+
+        formularioCumplimiento.addEventListener('submit', function (event) {
+          event.preventDefault();
+            
+            const proyectoId = document.getElementById('selectProyectoCumplimiento').value;
+            const progress = progressInput.value;
+
+            // Validar que proyectoId y progress no estén vacíos
+            if (!proyectoId || !progress) {
+                console.error('ProyectoId y progreso son obligatorios.');
+                return;
+            }         
+  
+          // Validar que proyectoId y progress no estén vacíos
+          if (!proyectoId || !progress) {
+            console.error('ProyectoId y progreso son obligatorios.');
+            return;
+          }
+  
+          // Realizar la solicitud al servidor
+          fetch('/actualizar-cumplimiento', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              proyectoId,
+              progress,
+            }),
+          })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
+              if (!data.success) {
+                console.error('Error al actualizar el cumplimiento en el servidor:', data.error);
+                // Maneja el error si es necesario
+              } else {
+                // Actualiza la tarea en el gráfico de Gantt
+                const tareaActualizada = ganttChart.get_task(proyectoId);
+                tareaActualizada.progress = data.proyecto.progress;
+                console.log('Esta es la tarea actualizada: ', tareaActualizada);
+
+                // Vuelve a renderizar el gráfico de Gantt para reflejar los cambios
+                ganttChart.render();
+
+                // Limpia el valor del input
+                progressInput.value = '';
+                console.log('Valor del input limpiado:', progressInput.value);
+              }
+            })
+            .catch(error => {
+              console.error('Error al realizar la solicitud al servidor:', error);
+              // Maneja el error si es necesario
+            });
+        });
+      }
+    });
+  </script>
+  
+
+    <!-- Agrega el enlace al archivo JS de Bootstrap y a tus archivos JavaScript personalizados aquí -->
+    <!-- Script para cargar jQuery versión 3.7.1 desde Code.jquery.com -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- jQuery versión 3.7.1: Biblioteca JavaScript para simplificar la manipulación del DOM.
+        Utilizado para funciones JavaScript y manipulación del DOM en la aplicación. -->
+
+    <!-- Script para cargar Bootstrap versión 5.3.2 desde jsDelivr -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
 
 </body>
+
 </html>
+
